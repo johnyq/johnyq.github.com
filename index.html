@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>首页</title>
+  
+    <meta name="author" content="John.Yao">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/twitter/stylesheets/bootstrap.min.css" type="text/css" rel="stylesheet" media="all">
+<link href="/assets/twitter/stylesheets/style.css" type="text/css" rel="stylesheet" media="all">
+<link href="/assets/twitter/widgets/google_prettify/stylesheets/twitter-bootstrap.css" type="text/css" rel="stylesheet" media="all">
+ 
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">Johnyq 烂笔头</a>
+          <ul class="nav">
+            
+              
+
+
+  <li><a href="/archive">Archive</a></li>
+
+
+            
+              
+
+
+  <li><a href="/tags">Tags</a></li>
+
+
+            
+              
+
+
+  <li><a href="/categories">Categories</a></li>
+
+
+            
+              
+
+
+  <li><a href="/pages">Pages</a></li>
+
+
+            
+              
+
+
+  <li><a href="/about">About Me</a></li>
+
+
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="content">
+        
+<div class="page-header">
+  <h1>首页 </h1>
+</div>
+
+<div class="row">
+  <div class="span12">
+    
+
+<h2>最近更新</h2>
+
+
+<div class="post">
+  <h3 class="title"><a href="/2013/init.html">开始记录点滴</a> <span class="date">2013-08-29</span></h3>
+
+  <p>工作这些年来零零碎碎也写了不少东西，但是时间一长都烟消云散了。<br />
+好记性不如烂笔头的道理，颠古不破。</p>
+
+<hr />
+
+<p>前段时间，有群里的技术朋友推荐使用github来搭建自己的blog，恰好我也一直想好好的学习下git的使用，目前从个人的情况来看，github在工作和学习中使用频率仅次于google。例如：我要学习某一个技术框架，我会先去官方下载demo或者document，但是有时候有些例子语焉不详或者过于简单，这时候去github上找一些例子就是一个捷径。</p>
+
+<p>在github搭建blog对于会对于我们这些码农似乎难度并不大，前提无非有如下几点</p>
+
+<ol>
+<li>有一个github的帐号。</li>
+<li>在本机上安装git客户端。</li>
+<li>使用第三方的博客引擎来生成静态HTML然后push到github上。</li>
+</ol>
+
+<hr />
+
+<p>我在网上检索了下，大多数采取的方案都是jekyll，这货是基于ruby的，但是ruby我并不熟悉，只好按网上教程的先安装RailsInstall 然后gem install其他组件。<br />
+折腾了一晚上，勉勉强强的算是有了一个雏形，但是在安装一个解释器的时死活装不上去，具体原因和windows下的c编译器有关系，于是寻找其他的解决办法。后来找到了我比较熟悉的java实现的<a href="https://github.com/jonbullock/JBake">JBake</a>,从代码本身来看是居于freemaker和boostrap为模版来实现的。后来<a href="http://wendal.net/">兽兽</a>强力推荐了他自己用go语言基于ruhoh实现的<a href="https://github.com/wendal/gor">gor</a>,我是个喜欢尝鲜的人，于是去尝试着用了下，很惊喜，相对于jekyll复杂的环境相比，gor简单很多，只要有一个go语言的编译环境即可。于是打算就使用这个来搭建自己的个人blog了。</p>
+
+<p>在这里感谢兽兽提供的gor，不得不说，它很好用，不懂go语言也无所谓，因为他很贴心的提供一个已经编译好的<a href="https://code.google.com/p/gor/downloads/list">gor.exe</a>,可以直接在windows下使用。当然我个人觉得还是自己编译下最好:)。gor的详细使用方法的<a href="https://github.com/wendal/gor">传送门</a></p>
+
+<hr />
+
+
+  <div class="more">
+    <a href="/2013/init.html" class="btn">read more..</a>
+  </div>
+</div>
+
+  </div>
+</div>
+
+      </div>
+
+      <footer>
+        <p>&copy; John.Yao 2013 
+          with help from <a href="http://github.com/wendal/gor" target="_blank" title="Gor -- Fast Blog">Gor</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+		  and Idea from <a href="http://ruhoh.com" target="_blank" title="The Definitive Technical Blogging Framework">ruhoh</a>
+        </p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    
+<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js"></script>
+<script>
+  var pres = document.getElementsByTagName("pre");
+  for (var i=0; i < pres.length; ++i) {
+    pres[i].className = "prettyprint linenums";
+  }
+  prettyPrint();
+</script>
+
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+  _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+  _gaq.push(['_setAccount', 'UA-123-12']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </body>
+</html>

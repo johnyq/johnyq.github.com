@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<rss version="2.0">  <channel>
+    <title>Johnyq 烂笔头</title>
+    <link>http://johnyq.github.com</link>
+    <pubDate>30 Aug 13 14:34 +0800</pubDate>
+    <item>
+      <title>开始记录点滴</title>
+      <link>http://johnyq.github.com/2013/init.html</link>
+      <pubDate>2013-08-29 12:00:00 +0800</pubDate>
+      <description>&lt;p&gt;工作这些年来零零碎碎也写了不少东西，但是时间一长都烟消云散了。&lt;br /&gt;&#xA;好记性不如烂笔头的道理，颠古不破。&lt;/p&gt;&#xA;&#xA;&lt;hr /&gt;&#xA;&#xA;&lt;p&gt;前段时间，有群里的技术朋友推荐使用github来搭建自己的blog，恰好我也一直想好好的学习下git的使用，目前从个人的情况来看，github在工作和学习中使用频率仅次于google。例如：我要学习某一个技术框架，我会先去官方下载demo或者document，但是有时候有些例子语焉不详或者过于简单，这时候去github上找一些例子就是一个捷径。&lt;/p&gt;&#xA;&#xA;&lt;p&gt;在github搭建blog对于会对于我们这些码农似乎难度并不大，前提无非有如下几点&lt;/p&gt;&#xA;&#xA;&lt;ol&gt;&#xA;&lt;li&gt;有一个github的帐号。&lt;/li&gt;&#xA;&lt;li&gt;在本机上安装git客户端。&lt;/li&gt;&#xA;&lt;li&gt;使用第三方的博客引擎来生成静态HTML然后push到github上。&lt;/li&gt;&#xA;&lt;/ol&gt;&#xA;&#xA;&lt;hr /&gt;&#xA;&#xA;&lt;p&gt;我在网上检索了下，大多数采取的方案都是jekyll，这货是基于ruby的，但是ruby我并不熟悉，只好按网上教程的先安装RailsInstall 然后gem install其他组件。&lt;br /&gt;&#xA;折腾了一晚上，勉勉强强的算是有了一个雏形，但是在安装一个解释器的时死活装不上去，具体原因和windows下的c编译器有关系，于是寻找其他的解决办法。后来找到了我比较熟悉的java实现的&lt;a href=&#34;https://github.com/jonbullock/JBake&#34;&gt;JBake&lt;/a&gt;,从代码本身来看是居于freemaker和boostrap为模版来实现的。后来&lt;a href=&#34;http://wendal.net/&#34;&gt;兽兽&lt;/a&gt;强力推荐了他自己用go语言基于ruhoh实现的&lt;a href=&#34;https://github.com/wendal/gor&#34;&gt;gor&lt;/a&gt;,我是个喜欢尝鲜的人，于是去尝试着用了下，很惊喜，相对于jekyll复杂的环境相比，gor简单很多，只要有一个go语言的编译环境即可。于是打算就使用这个来搭建自己的个人blog了。&lt;/p&gt;&#xA;&#xA;&lt;p&gt;在这里感谢兽兽提供的gor，不得不说，它很好用，不懂go语言也无所谓，因为他很贴心的提供一个已经编译好的&lt;a href=&#34;https://code.google.com/p/gor/downloads/list&#34;&gt;gor.exe&lt;/a&gt;,可以直接在windows下使用。当然我个人觉得还是自己编译下最好:)。gor的详细使用方法的&lt;a href=&#34;https://github.com/wendal/gor&#34;&gt;传送门&lt;/a&gt;&lt;/p&gt;&#xA;&#xA;&lt;hr /&gt;&#xA;</description>
+    </item>
+  </channel>
+</rss>
