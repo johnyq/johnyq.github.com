@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <title>企讯通短信发送折腾记录</title>
+  
+    <meta name="description" content="EMPP短信发送">
+  
+    <meta name="author" content="John.Yao">
+
+    <!-- Le HTML5 shim, for IE6-8 support of HTML elements -->
+    <!--[if lt IE 9]>
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <!-- Le styles -->
+    <link href="/assets/twitter/stylesheets/bootstrap.min.css" type="text/css" rel="stylesheet" media="all">
+<link href="/assets/twitter/stylesheets/style.css" type="text/css" rel="stylesheet" media="all">
+<link href="/assets/twitter/widgets/google_prettify/stylesheets/twitter-bootstrap.css" type="text/css" rel="stylesheet" media="all">
+ 
+
+    <!-- Le fav and touch icons -->
+  <!-- Update these with your own images
+    <link rel="shortcut icon" href="images/favicon.ico">
+    <link rel="apple-touch-icon" href="images/apple-touch-icon.png">
+    <link rel="apple-touch-icon" sizes="72x72" href="images/apple-touch-icon-72x72.png">
+    <link rel="apple-touch-icon" sizes="114x114" href="images/apple-touch-icon-114x114.png">
+  -->
+  </head>
+
+  <body>
+
+    <div class="navbar">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="/">Johnyq 烂笔头</a>
+          <ul class="nav">
+            
+              
+
+
+  <li><a href="/archive">Archive</a></li>
+
+
+            
+              
+
+
+  <li><a href="/tags">Tags</a></li>
+
+
+            
+              
+
+
+  <li><a href="/categories">Categories</a></li>
+
+
+            
+              
+
+
+  <li><a href="/pages">Pages</a></li>
+
+
+            
+              
+
+
+  <li><a href="/about">About Me</a></li>
+
+
+            
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <div class="content">
+        <div class="page-header">
+  <h1>企讯通短信发送折腾记录 </h1>
+</div>
+
+<div class="row">
+  <div class="span8">
+    <p>&emsp;&emsp;最近一个业务需要发送短信，客户选择了移动的企讯通（EMPP）。这货其实本质上就是CMPP3.0，然后移动又对他进行了包装，最大的特点就是三家通吃，即移动、联通、电信三家都可以进行短信的发送。呵呵，是不是听起来很美好，以后发短信只要用这货就好了，再也不用弄三家的通道各走各的了。<br />
+but，只有移动的上下行、状态报告都可以收发，其余两家只能呵呵了。</p>
+
+<hr />
+
+<h4>问题</h4>
+
+<p>&emsp;&emsp;11年的时候曾经接触过，那时候的需求是针对单用户的单发，对发送速度上并没有要求，这次是要求群发，发送的用户大约在5000左右，用户要求在10分钟内到达用户手机。我估摸着计算了一下，按照用户通道20条/s，那么一分钟就是20*60=1200，那么5000条只需要5分钟就差不多提交到网关，算上到达用户手机的时间，10分钟绰绰有余了。</p>
+
+<p>&emsp;&emsp;于是代码copy到工程里，测试了两条短信后（客户掏钱没敢多试），在系统功能测试完毕后就上线了。用户第一次正式发送就出现了问题，我们发现3000多条短信发了将近一个多小时，几乎是每秒钟才能发一条，这不是TM开玩笑么。我第一反应就是代码写的有问题，首先找到了代码走查，再对照官方给出的开发类库API，采用的是如下的发送方法：</p>
+
+<pre> int[] submitMsgAsync(java.lang.String content, java.lang.String[] mobiles, java.lang.String serviceId)  </pre>
+
+<p>这个方法显而易见，异步发送短信，参数分表是短信内容、手机号码、serviceId。<br />
+没有啥问题嘛，为啥发送的这么慢呢？我们采用的是一个阻塞队列，从队列里取出来后进行发送。我仔细的看了下整个过程没有发现代码可以调整的地方。于是写了一个main函数，测试了两次，一次是普通短信，执行完成约7ms，一次为长短信，拆分为2条，返回为 2003ms 。没有看错，尼玛2s，这不科学啊！<br />
+问题找到了，接下来改如何解决呢？</p>
+
+<h4>解决</h4>
+
+<h5>方法一</h5>
+
+<p>我们原来采用的方式是一次发送一个手机号码，但是这个方法是可以一次发送多个手机号码的，仔细的翻了下移动的FAQ，一次提交最多为5个手机号码，嗯，这样能提高发送的速度，但是这还是达不到20条/s。</p>
+
+<h5>方法二</h5>
+
+<p>在咨询移动人员后，他们对于我们的问题感到很费解，说他们后台收到请求是很快的，但是不是很清楚我们所说的一次发送需要2s的原因，在多次沟通后这个问题没有得到解决，但是他们提出了另外一个思路，申请多个子账号来发送，我们想了下如果加上1065xxxx 主号码，再申请若干1065xxxx001、1065xxxx002等多个子账号同时连接网关，这样一次提交5个手机号码，基本上能将发送速度提升到允许的速度。经过实际发送测试后发现，该方法可行，但是有几个问题：</p>
+
+<ol>
+<li>客户不希望收到的发送号码为子号，要求为1065XXXX的主号码，我印象中API支持指定发送的原号码的。但是再多次尝试失败并与移动支持沟通后表示采用子账号发送的短信无法指定为主号码，只能为1065xxxx001后面增加后缀。<br /></li>
+<li>该种方式在发送的过程中多次出现连接认证10001的情况，不是很稳定。</li>
+</ol>
+
+<h5>方法三</h5>
+
+<p>在写main方法测试的时候，我发现每次只执行该方法执行时间总是为2003，我猜测应该是有意的sleep了，于是我想看看源代码证实我的想法，于是反编译了官方提供的jar，在EmppApi 这个类里发送短信方法最后一行看到了</p>
+
+<pre> Thread.sleep(1000L / sendRate); </pre> 
+
+<p>的确是有休眠的，但是这个sendRate是哪里来的，从字面上来看，应该是一个控制速率，于是再找，发现这个类里其实提供了一个方法：</p>
+
+<pre> int[] submitMsgAsync(String content, String[] mobiles, String serviceId, String srcTermId, int sendRate)</pre>
+
+<p>sendRate 这个参数如果不设置，默认为1，这就解释了拆分为两条发送的长短信为什么会执行耗时为2s了，奇怪的是这个方法是public的，但是官方的APIdocument里并没有找到这个重载方法！好吧，也许是他们忘了，我们写代码的时候瞎了！！！！！
+最后在设置完这个参数为20后搞定！</p>
+
+<h4>总结</h4>
+
+<ul>
+<li>整个过程前后折腾了差不多一个礼拜，短信业务比较特殊，不上量有些问题无法暴露出来，而且EMPP并没有模拟器可以测试收发。移动的支撑人员并不是API的开发者，有些问题没办法在代码层面协助，最终还是得靠自己来解决。</li>
+<li>代码是最好的文档！！！！</li>
+</ul>
+
+    <hr>
+    <div class="pagination">
+      <ul>
+        <ul>
+          
+          
+            <li class="prev disabled"><a>&larr; Previous</a></li>
+          
+
+            <li><a href="/archive">Archive</a></li>
+
+          
+            <li class="next"><a href="/2013/init.html" title="开始记录点滴">Next &rarr;</a></li>
+          
+          
+        </ul>
+      </ul>
+    </div>
+    <hr>
+    
+	<!-- Duoshuo Comment BEGIN -->
+	<div class="ds-thread"></div>
+	<script type="text/javascript">
+	var duoshuoQuery = {short_name:"johnyq"};//require,replace your short_name
+	(function() {
+					var ds = document.createElement('script');
+					ds.type = 'text/javascript';ds.async = true;
+					ds.src = 'http://static.duoshuo.com/embed.js';
+					ds.charset = 'UTF-8';
+					(document.getElementsByTagName('head')[0] 
+					|| document.getElementsByTagName('body')[0]).appendChild(ds);
+	})();
+	</script>
+	<!-- Duoshuo Comment END -->	
+	
+  </div>
+  
+  <div class="span4">
+    <h4>Published</h4>
+    <div class="date"><span>2014-07-22</span></div>
+    <br>
+    <h4>Categories</h4>
+    <ul class="tag_box">
+    
+      <li>
+  <a href="/categories/#%E7%9F%AD%E4%BF%A1-ref">短信 <span>1</span></a>
+</li>
+    
+      <li>
+  <a href="/categories/#empp-ref">empp <span>1</span></a>
+</li>
+    
+    </ul>
+    <br>
+    <h4>Tags</h4>
+    <ul class="tag_box">
+    
+      <li>
+  <a href="/tags/#empp-ref">empp <span>1</span></a>
+</li>
+    
+      <li>
+  <a href="/tags/#%E4%BC%81%E8%AE%AF%E9%80%9A-ref">企讯通 <span>1</span></a>
+</li>
+    
+      <li>
+  <a href="/tags/#%E7%9F%AD%E4%BF%A1-ref">短信 <span>1</span></a>
+</li>
+    
+    </ul>
+  </div>
+</div>
+
+      </div>
+
+      <footer>
+        <p>&copy; John.Yao 2013 
+          with help from <a href="http://github.com/wendal/gor" target="_blank" title="Gor -- Fast Blog">Gor</a>
+          and <a href="http://twitter.github.com/bootstrap/" target="_blank">Twitter Bootstrap</a>
+		  and Idea from <a href="http://ruhoh.com" target="_blank" title="The Definitive Technical Blogging Framework">ruhoh</a>
+        </p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    
+<script src="//cdnjscn.b0.upaiyun.com/libs/prettify/r298/prettify.min.js"></script>
+<script>
+  var pres = document.getElementsByTagName("pre");
+  for (var i=0; i < pres.length; ++i) {
+    pres[i].className = "prettyprint ";
+  }
+  prettyPrint();
+</script>
+
+    
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  var pluginUrl = '//www.google-analytics.com/plugins/ga/inpage_linkid.js';
+  _gaq.push(['_require', 'inpage_linkid', pluginUrl]);
+  _gaq.push(['_setAccount', 'UA-123-12']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+  </body>
+</html>

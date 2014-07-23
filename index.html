@@ -90,12 +90,39 @@
 
 
 <div class="post">
-  <h3 class="title"><a href="/2013/init.html">开始记录点滴</a> <span class="date">2013-08-29</span></h3>
+  <h3 class="title"><a href="/2014/sms-empp-send-speed.html">企讯通短信发送折腾记录</a> <span class="date">2014-07-22</span></h3>
 
-  <p>工作这些年来零零碎碎也写了不少东西，但是时间一长都烟消云散了。<br />
-好记性不如烂笔头的道理，颠古不破。</p>
+  <p>&emsp;&emsp;最近一个业务需要发送短信，客户选择了移动的企讯通（EMPP）。这货其实本质上就是CMPP3.0，然后移动又对他进行了包装，最大的特点就是三家通吃，即移动、联通、电信三家都可以进行短信的发送。呵呵，是不是听起来很美好，以后发短信只要用这货就好了，再也不用弄三家的通道各走各的了。<br />
+but，只有移动的上下行、状态报告都可以收发，其余两家只能呵呵了。</p>
 
 <hr />
+
+<h4>问题</h4>
+
+<p>&emsp;&emsp;11年的时候曾经接触过，那时候的需求是针对单用户的单发，对发送速度上并没有要求，这次是要求群发，发送的用户大约在5000左右，用户要求在10分钟内到达用户手机。我估摸着计算了一下，按照用户通道20条/s，那么一分钟就是20*60=1200，那么5000条只需要5分钟就差不多提交到网关，算上到达用户手机的时间，10分钟绰绰有余了。</p>
+
+<p>&emsp;&emsp;于是代码copy到工程里，测试了两条短信后（客户掏钱没敢多试），在系统功能测试完毕后就上线了。用户第一次正式发送就出现了问题，我们发现3000多条短信发了将近一个多小时，几乎是每秒钟才能发一条，这不是TM开玩笑么。我第一反应就是代码写的有问题，首先找到了代码走查，再对照官方给出的开发类库API，采用的是如下的发送方法：</p>
+
+<pre> int[] submitMsgAsync(java.lang.String content, java.lang.String[] mobiles, java.lang.String serviceId)  </pre>
+
+<p>这个方法显而易见，异步发送短信，参数分表是短信内容、手机号码、serviceId。<br />
+没有啥问题嘛，为啥发送的这么慢呢？我们采用的是一个阻塞队列，从队列里取出来后进行发送。我仔细的看了下整个过程没有发现代码可以调整的地方。于是写了一个main函数，测试了两次，一次是普通短信，执行完成约7ms，一次为长短信，拆分为2条，返回为 2003ms 。没有看错，尼玛2s，这不科学啊！<br />
+问题找到了，接下来改如何解决呢？</p>
+
+<h4>解决</h4>
+
+
+  <div class="more">
+    <a href="/2014/sms-empp-send-speed.html" class="btn">read more..</a>
+  </div>
+</div>
+
+<div class="post">
+  <h3 class="title"><a href="/2013/init.html">开始记录点滴</a> <span class="date">2013-08-29</span></h3>
+
+  <p>工作这些年来零零碎碎也写了不少东西，但是时间一长都烟消云散了。</p>
+
+<h2>好记性不如烂笔头的道理，颠古不破。</h2>
 
 <p>前段时间，有群里的技术朋友推荐使用github来搭建自己的blog，恰好我也一直想好好的学习下git的使用，目前从个人的情况来看，github在工作和学习中使用频率仅次于google。例如：我要学习某一个技术框架，我会先去官方下载demo或者document，但是有时候有些例子语焉不详或者过于简单，这时候去github上找一些例子就是一个捷径。</p>
 
@@ -138,11 +165,11 @@
     </div> <!-- /container -->
 
     
-<script src="http://cdnjs.cloudflare.com/ajax/libs/prettify/188.0.0/prettify.js"></script>
+<script src="//cdnjscn.b0.upaiyun.com/libs/prettify/r298/prettify.min.js"></script>
 <script>
   var pres = document.getElementsByTagName("pre");
   for (var i=0; i < pres.length; ++i) {
-    pres[i].className = "prettyprint linenums";
+    pres[i].className = "prettyprint ";
   }
   prettyPrint();
 </script>
